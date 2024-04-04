@@ -1,17 +1,25 @@
-import express from "express";
+const express = require("express");
+const establishConnection = require("./connections/mongoDB");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+const { portNo } = require("./constants/common.constant");
+const userRouter = require("./routes/user.route");
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
+app.use(cors());
+app.use(bodyParser.json());
+app.use("/api/v1/user", userRouter);
 
-app.get("/health", (req, res) => {
+app.get("/api/v1/health", (req, res) => {
   res.send("Active");
 });
 
-app.listen(() => {
-  console.log("App is listening");
+establishConnection().then(() => {
+  app.listen(portNo, () => {
+    console.log("App is listening on port " + portNo);
+  });
 });
 
-export default app;
+module.exports = app;
